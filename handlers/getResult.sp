@@ -32,8 +32,6 @@ public Action:Timer_GetResults(Handle:timer)
 					GameRules_SetProp("m_nCTTimeOuts", (GameRules_GetProp("m_nCTTimeOuts") + 1));
 					GameRules_SetPropFloat("m_flCTTimeOutRemaining", 0.0);
 				}
-
-				// CreateTimer(0.5, Timer_DoUnpause, teamOnly);
 			} else {
 				CreateTimer(0.5, Timer_VoteFail);
 			}
