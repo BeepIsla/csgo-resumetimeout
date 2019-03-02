@@ -1,5 +1,4 @@
-public Action:Timer_GetResults(Handle:timer)
-{
+public Action Timer_GetResults(Handle timer) {
 	// Get stuff and check if we pass or fail or wait for more votes
 	int entity = FindEntityByClassname(-1, "vote_controller");
 	if (entity < 0) {
@@ -13,7 +12,7 @@ public Action:Timer_GetResults(Handle:timer)
 
 	if (activeIssue == 99) { // Our custom vote
 		if ((option1 + option2) >= potentialVotes) {
-			if (DidWePassQuorumRatio(option1, option2, 100)) {
+			if (DidWePassQuorumRatio(option1, option2, 100.0)) {
 				// Timeout vote so the vote doesn't last infinite
 				if (voteTimeout != null) {
 					KillTimer(voteTimeout);

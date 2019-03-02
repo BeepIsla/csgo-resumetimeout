@@ -1,8 +1,6 @@
-public Action Timer_VoteTimeout(Handle timer, any:userid)
-{
-	new client = GetClientOfUserId(userid);
-	if (client <= 0 && client > MaxClients)
-	{
+public Action Timer_VoteTimeout(Handle timer, int userid) {
+	int client = GetClientOfUserId(userid);
+	if (client <= 0 && client > MaxClients) {
 		return;
 	}
 

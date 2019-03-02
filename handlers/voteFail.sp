@@ -1,11 +1,10 @@
-public Action:Timer_VoteFail(Handle:timer)
-{
-	new entity = FindEntityByClassname(-1, "vote_controller");
+public Action Timer_VoteFail(Handle timer) {
+	int entity = FindEntityByClassname(-1, "vote_controller");
 	if (entity < 0) {
 		return Plugin_Continue;
 	}
 
-	new Handle:voteFailed = StartMessageAll("VoteFailed", USERMSG_RELIABLE);
+	Handle voteFailed = StartMessageAll("VoteFailed", USERMSG_RELIABLE);
 	PbSetInt(voteFailed, "team", GetEntProp(entity, Prop_Send, "m_iOnlyTeamToVote", -1));
 	PbSetInt(voteFailed, "reason", 4);
 	/*

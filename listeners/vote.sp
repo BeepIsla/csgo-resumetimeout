@@ -1,7 +1,5 @@
-public Action:Listener_Vote(client, const String:command[], int argc)
-{
-	if (!isVoteActive || argc < 1)
-	{
+public Action Listener_Vote(int client, char[] command, int argc) {
+	if (!isVoteActive || argc < 1) {
 		return Plugin_Continue;
 	}
 
@@ -13,7 +11,7 @@ public Action:Listener_Vote(client, const String:command[], int argc)
 		return Plugin_Stop;
 	}
 
-	new String:option[512];
+	char option[512];
 	GetCmdArg(1, option, sizeof(option));
 
 	if (strcmp(option, "option1", false) == 0) {

@@ -2,12 +2,22 @@
 #include <sdktools>
 #include <cstrike>
 
+#pragma semicolon 1
+#pragma newdecls required
+
+public Plugin myinfo = {
+	name		= "CSGO Resume Timeout",
+	author		= "github.com/BeepFelix",
+	description	= "Automatically creates a vote when a timeout starts to cancel the timeout early",
+	version		= "0.1"
+};
+
 float remainingTimeCT = -1.0; // Default value is -1.0
 float remainingTimeT = -1.0; // To avoid issues
 bool isVoteActive = false;
 bool blockNewVotes = false;
 bool alreadyVoted[MAXPLAYERS];
-new Handle:voteTimeout = null;
+Handle voteTimeout = null;
 
 public void OnPluginStart() {
 	AddCommandListener(Listener_Vote, "vote");
@@ -70,15 +80,15 @@ public Action Msg_VotePass(UserMsg msg_id, Protobuf msg, const int[] players, in
 	return Plugin_Continue;
 }
 
-public Action:Timer_SetTimeoutTime(Handle timer) {
+public Action Timer_SetTimeoutTime(Handle timer) {
 	// Set the timeout-time to the remaining duration
 	if (GameRules_GetProp("m_bTerroristTimeOutActive") == 1) {
 		if (FloatCompare(remainingTimeT, 0.01) == 1) { // Only do something if its above 0.01
-			GameRules_SetPropFloat("m_flTerroristTimeOutRemaining", remainingTimeT)
+			GameRules_SetPropFloat("m_flTerroristTimeOutRemaining", remainingTimeT);
 		}
 	} else {
 		if (FloatCompare(remainingTimeCT, 0.01) == 1) { // Only do something if its above 0.01
-			GameRules_SetPropFloat("m_flCTTimeOutRemaining", remainingTimeCT)
+			GameRules_SetPropFloat("m_flCTTimeOutRemaining", remainingTimeCT);
 		}
 	}
 	return Plugin_Continue;
@@ -94,7 +104,7 @@ public Action Msg_VoteStart(UserMsg msg_id, Protobuf msg, const int[] players, i
 	return Plugin_Continue;
 }
 
-public Action Timer_AllowVote(Handle:timer) {
+public Action Timer_AllowVote(Handle timer) {
 	blockNewVotes = false;
 
 	// Are we currently in freezetime?
@@ -116,7 +126,7 @@ public Action Timer_AllowVote(Handle:timer) {
 	return Plugin_Continue;
 }
 
-public Action Listener_Callvote(client, const String:command[], int argc)
+public Action Listener_Callvote(int client, char[] command, int argc)
 {
 	// Block upcoming votes
 	if (isVoteActive || blockNewVotes)
@@ -141,11 +151,11 @@ public Action Event_RoundStart(Event event, const char[] name, bool dontBroadcas
 	// Set the timeout-time to the remaining duration
 	if (GameRules_GetProp("m_bTerroristTimeOutActive") == 1) {
 		if (FloatCompare(remainingTimeT, 0.0) == 1) { // Only do something if its above 0.0
-			GameRules_SetPropFloat("m_flTerroristTimeOutRemaining", remainingTimeT)
+			GameRules_SetPropFloat("m_flTerroristTimeOutRemaining", remainingTimeT);
 		}
 	} else {
 		if (FloatCompare(remainingTimeCT, 0.0) == 1) { // Only do something if its above 0.0
-			GameRules_SetPropFloat("m_flCTTimeOutRemaining", remainingTimeCT)
+			GameRules_SetPropFloat("m_flCTTimeOutRemaining", remainingTimeCT);
 		}
 	}
 
@@ -159,7 +169,7 @@ public Action Event_RoundStart(Event event, const char[] name, bool dontBroadcas
 	return Plugin_Continue;
 }
 
-CreateResumeMatchVote() {
+void CreateResumeMatchVote() {
 	float remainingTimeoutTime = GameRules_GetProp("m_bTerroristTimeOutActive") == 1 ? GameRules_GetPropFloat("m_flTerroristTimeOutRemaining") : GameRules_GetPropFloat("m_flCTTimeOutRemaining");
 
 	// Do not create a vote if the remaining timeout is less than 10 seconds
@@ -171,7 +181,7 @@ CreateResumeMatchVote() {
 	PrintToChatAll("You cannot vote No in this vote. No votes will count as Yes votes.");
 
 	// Create vote
-	new entity = FindEntityByClassname(-1, "vote_controller");
+	int entity = FindEntityByClassname(-1, "vote_controller");
 	if (entity < 0) {
 		return;
 	}
@@ -180,9 +190,11 @@ CreateResumeMatchVote() {
 	SetEntProp(entity, Prop_Send, "m_nPotentialVotes", RealPlayerCount(0, true, false, true));
 	SetEntProp(entity, Prop_Send, "m_iOnlyTeamToVote", -1);
 	SetEntProp(entity, Prop_Send, "m_bIsYesNoVote", true);
-	for (new i = 0; i < 5; i++) SetEntProp(entity, Prop_Send, "m_nVoteOptionCount", 0, _, i);
+	for (int i = 0; i < 5; i++) {
+		SetEntProp(entity, Prop_Send, "m_nVoteOptionCount", 0, _, i);
+	}
 
-	new Handle:voteStart = voteStart = StartMessageAll("VoteStart", USERMSG_RELIABLE);
+	Handle voteStart = voteStart = StartMessageAll("VoteStart", USERMSG_RELIABLE);
 	PbSetInt(voteStart, "team", -1); // Everyone can vote
 	PbSetInt(voteStart, "ent_idx", 0); // Vote caller: Server
 	PbSetString(voteStart, "disp_str", "#SFUI_Vote_unpause_match"); // String to display (Example: "Change map to:") - Customs dont work?
